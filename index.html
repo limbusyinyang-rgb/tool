@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xóa Mã Ẩn - Công cụ xoá mã ẩn tự động</title>
+  <meta name="description" content="Xóa mã ẩn tự động, ngắt theo dõi IP nhanh chóng" />
+  <meta name="keywords" content="xóa mã ẩn, tool xóa mã ẩn, xóa tracking ip, xoamaan" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+
+  <div class="page">
+    <div class="card show" id="screen1">
+      <h2 class="glitch" data-text="[ XÓA MÃ ẨN ]">[ XÓA MÃ ẨN ]</h2>
+
+      <div class="tab-selection" role="tablist" aria-label="Chế độ">
+        <button type="button" class="tab-btn active" role="tab" aria-selected="true" id="tab-website" data-tab="website">
+          <span class="tab-icon">🌐</span>
+          <span>Website</span>
+        </button>
+        <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-account" data-tab="account">
+          <span class="tab-icon">👤</span>
+          <span>Tài Khoản</span>
+        </button>
+      </div>
+
+      <div class="check-to-select-stack">
+        <div class="shared-check-row" id="checkInputRegion" data-check-state="website" role="group" aria-label="Ô kiểm tra">
+          <div class="input-leading-wrap">
+            <span class="leading-icon-slot" aria-hidden="true">🌐</span>
+            <input class="check-input" type="text" id="checkInput" name="checkInput" placeholder="Nhập URL cần kiểm tra..." autocomplete="url" inputmode="url" aria-label="Nhập URL cần kiểm tra" />
+          </div>
+        </div>
+        <div class="check-warning-gap" id="checkWarningGap" aria-live="polite">
+          <div id="checkWarning" class="warning check-input-warning" role="alert"></div>
+        </div>
+        <div class="select_target">Chọn mục tiêu để xoá mã ẩn</div>
+      </div>
+
+      <div class="desc">Click chọn trang — locked = vô hiệu</div>
+
+      <div class="banner-grid">
+        <button class="banner-item active">
+          <img src="assets/logos/sc88.png" alt="SC88" class="logo-img" />
+          <span>SC88</span>
+        </button>
+        <button class="banner-item locked" disabled>
+          <img src="assets/logos/hi88.webp" alt="Hi88" class="logo-img" />
+          <span>Hi88</span>
+          <span class="lock-overlay">🔒</span>
+        </button>
+        <button class="banner-item locked" disabled>
+          <img src="assets/logos/shbet.webp" alt="SHBET" class="logo-img" />
+          <span>SHBET</span>
+          <span class="lock-overlay">🔒</span>
+        </button>
+        <button class="banner-item locked" disabled>
+          <img src="assets/logos/mm88.webp" alt="MM88" class="logo-img" />
+          <span>MM88</span>
+          <span class="lock-overlay">🔒</span>
+        </button>
+        <button class="banner-item locked" disabled>
+          <img src="assets/logos/cm88.webp" alt="CM88" class="logo-img" />
+          <span>CM88</span>
+          <span class="lock-overlay">🔒</span>
+        </button>
+        <button class="banner-item locked" disabled>
+          <img src="assets/logos/f168.webp" alt="F168" class="logo-img" />
+          <span>F168</span>
+          <span class="lock-overlay">🔒</span>
+        </button>
+      </div>
+
+      <div class="desc">Thực thi xóa mã ẩn tự động trước khi đăng ký cho từng người chơi.</div>
+      <div class="desc">Ngắt chế độ theo dõi IP từ nhà phát hành.</div>
+
+      <div class="important-warning">⚠ Sau khi xoá mã ẩn, tiến hành đăng ký tài khoản để chơi.</div>
+
+      <div class="confirm-row">
+        <label><input type="checkbox" id="agree" /> Xác nhận để thực thi xoá_mã_ẩn</label>
+        <div id="warning" class="warning"></div>
+      </div>
+      <button id="startBtn" class="action-btn">run: xoá_mã_ẩn</button>
+    </div>
+
+    <div class="card loading" id="screen2">
+      <h2>[ TERMINAL ] Đang kiểm tra...</h2>
+      <p class="small-text">Hệ thống đang tải dữ liệu, vui lòng chờ.</p>
+      <div class="command-line">$ xoá_mã_ẩn --confirm</div>
+      <div id="logBox" class="log-box"></div>
+      <div class="spinner"></div>
+      <div class="percent" id="percent">0%</div>
+      <div class="bar"><span id="bar"></span></div>
+    </div>
+
+    <div class="card success" id="screen3">
+      <svg class="checkmark" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45"></circle>
+        <path d="M30 52 L45 65 L70 35"></path>
+      </svg>
+      <div class="live live-success">[ LIVE FEED ] ACTIVITY</div>
+      <p class="success-text">
+        &gt; Mã ẩn đã được xoá khỏi hệ thống hoàn tất.<br />
+        &gt; Mã đã được đánh dấu đã sử dụng và xoá.<br />
+        &gt; Lịch sử xoá mã đã được lưu lại.<br />
+        &gt; Bạn có thể login game này và tiếp tục.
+      </p>
+      <button id="closeBtn" class="action-btn">Register Game</button>
+      <div class="countdown">Tự động chuyển sau <span id="timer">3</span>s...</div>
+    </div>
+  </div>
+
+  <div class="system-info">
+    <div class="info-box"><span class="label">IP</span><span id="ip" class="value">14.191.212.82</span></div>
+    <div class="info-box"><span class="label">THIẾT BỊ</span><span id="device" class="value">🖥 Desktop</span></div>
+    <div class="info-box"><span class="label">OS</span><span id="os" class="value">🪟 Windows</span></div>
+    <div class="info-box"><span class="label">BROWSER</span><span id="browser" class="value">🌐 Chrome</span></div>
+  </div>
+
+  <div class="seo-text" aria-hidden="true">
+    <h2>Xóa mã ẩn tự động</h2>
+    <p>Tool xóa mã ẩn tự động giúp loại bỏ theo dõi IP nhanh chóng. Công cụ xóa mã ẩn miễn phí dành cho game online.</p>
+    <p>Hệ thống xóa mã ẩn tự động giúp ngắt tracking từ nhà phát hành.</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
