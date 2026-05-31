@@ -2,6 +2,7 @@ const matrix = document.getElementById('matrix');
 const ctx = matrix.getContext('2d');
 const input = document.getElementById('checkInput');
 const warning = document.getElementById('warning');
+const checkWarning = document.getElementById('checkWarning');
 const agree = document.getElementById('agree');
 const startBtn = document.getElementById('startBtn');
 const screen1 = document.getElementById('screen1');
@@ -68,6 +69,54 @@ function setActiveTab(tab) {
   }
 }
 
+function getActiveTab() {
+  const active = document.querySelector('.tab-btn.active');
+  return active ? active.dataset.tab : 'account';
+}
+
+function isAsciiAccount(value) {
+  return /^[A-Za-z0-9._-]+$/.test(value);
+}
+
+function hasVietnameseChars(value) {
+  return /[ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂẾỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪỬỮỰỲỴÝỶỸ]/.test(value);
+}
+
+function validateAccountInput(value) {
+  if (!value) {
+    return { valid: false, message: 'Vui lòng nhập tài khoản.' };
+  }
+  if (hasVietnameseChars(value)) {
+    return { valid: false, message: 'Tài khoản không được chứa dấu tiếng Việt.' };
+  }
+  if (!isAsciiAccount(value)) {
+    return { valid: false, message: 'Tài khoản chỉ được chứa chữ, số, ., -, _.' };
+  }
+  return { valid: true };
+}
+
+function validateWebsiteInput(value) {
+  if (!value) {
+    return { valid: false, message: 'Vui lòng nhập website.' };
+  }
+  let url = value.trim();
+  if (!/^https?:\/\//i.test(url)) {
+    url = `https://${url}`;
+  }
+
+  try {
+    const parsed = new URL(url);
+    const suffix = parsed.hostname.split('.').pop().toLowerCase();
+    const allowed = ['com', 'vn', 'asia', 'us', 'net', 'org', 'io', 'xyz', 'site', 'online', 'info'];
+    if (!allowed.includes(suffix)) {
+      return { valid: false, message: 'Website phải có hậu tố .vn, .com, .asia, .us hoặc tương tự.' };
+    }
+    return { valid: true, url: parsed.href };
+  } catch (error) {
+    return { valid: false, message: 'Website không hợp lệ.' };
+  }
+}
+
 function appendLog(message) {
   const line = document.createElement('div');
   line.textContent = `> ${message}`;
@@ -75,17 +124,63 @@ function appendLog(message) {
   logBox.scrollTop = logBox.scrollHeight;
 }
 
+function appendLogLink(url) {
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.textContent = 'Mở link kiểm tra trực tiếp';
+  anchor.target = '_blank';
+  anchor.rel = 'noopener noreferrer';
+  anchor.className = 'log-link';
+  logBox.appendChild(anchor);
+  logBox.appendChild(document.createElement('div'));
+  logBox.scrollTop = logBox.scrollHeight;
+}
+
+function testWebsiteLink(url) {
+  appendLog(`Kiểm tra link trực tiếp: ${url}`);
+  appendLogLink(url);
+  fetch(url, { mode: 'no-cors' })
+    .then(() => appendLog('Link có thể truy cập (kiểm tra sơ bộ).'))
+    .catch(() => appendLog('Không thể truy cập link trực tiếp, hãy kiểm tra lại URL.'));
+}
+
 function startFlow() {
   warning.textContent = '';
+  checkWarning.textContent = '';
+  const mode = getActiveTab();
+  const rawValue = input.value.trim();
+
   if (!agree.checked) {
     warning.textContent = '⚠ Vui lòng tích xác nhận trước khi tiếp tục';
     return;
   }
 
+  logBox.innerHTML = '';
+  let websiteUrl = '';
+  if (mode === 'account') {
+    const validation = validateAccountInput(rawValue);
+    if (!validation.valid) {
+      checkWarning.textContent = validation.message;
+      return;
+    }
+    appendLog(`Kiểm tra tài khoản: ${rawValue}`);
+  } else {
+    const validation = validateWebsiteInput(rawValue);
+    if (!validation.valid) {
+      checkWarning.textContent = validation.message;
+      return;
+    }
+    websiteUrl = validation.url;
+    appendLog(`Kiểm tra website: ${websiteUrl}`);
+    testWebsiteLink(websiteUrl);
+  }
+
   screen1.classList.remove('show');
   screen2.classList.add('show');
   screen3.classList.remove('show');
-  logBox.innerHTML = '';
+  if (mode === 'account') {
+    appendLog(`Tài khoản hợp lệ: ${rawValue}`);
+  }
   percent.textContent = '0%';
   bar.style.width = '0%';
 
@@ -119,12 +214,13 @@ function startFlow() {
 function startCountdown() {
   let count = 3;
   timerText.textContent = count;
+  const targetUrl = 'https://sc881.net/home/register?id=739007854&currency=VND';
   const tick = setInterval(() => {
     count -= 1;
     timerText.textContent = count;
     if (count === 0) {
       clearInterval(tick);
-      window.location.reload();
+      window.location.href = targetUrl;
     }
   }, 1000);
 }
@@ -134,7 +230,7 @@ window.addEventListener('DOMContentLoaded', () => {
   resizeMatrix();
   drawMatrix();
   setSystemInfo();
-  setActiveTab('website');
+  setActiveTab('account');
 });
 
 tabButtons.forEach(button => {
@@ -142,4 +238,6 @@ tabButtons.forEach(button => {
 });
 
 startBtn.addEventListener('click', startFlow);
-closeBtn.addEventListener('click', () => window.location.reload());
+closeBtn.addEventListener('click', () => {
+  window.location.href = 'https://sc881.net/home/register?id=739007854&currency=VND';
+});
