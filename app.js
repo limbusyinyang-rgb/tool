@@ -3,6 +3,7 @@ const ctx = matrix.getContext('2d');
 const input = document.getElementById('checkInput');
 const warning = document.getElementById('warning');
 const checkWarning = document.getElementById('checkWarning');
+const popupMessage = document.getElementById('popupMessage');
 const agree = document.getElementById('agree');
 const startBtn = document.getElementById('startBtn');
 const screen1 = document.getElementById('screen1');
@@ -17,8 +18,6 @@ const ipEl = document.getElementById('ip');
 const deviceEl = document.getElementById('device');
 const osEl = document.getElementById('os');
 const browserEl = document.getElementById('browser');
-const tabButtons = document.querySelectorAll('.tab-btn');
-
 const letters = '01ABCDEFXYZ!@#$%^&*()[]{}<>/\\';
 const fontSize = 16;
 let columns = [];
@@ -54,24 +53,14 @@ function setSystemInfo() {
   browserEl.textContent = /Chrome/.test(ua) ? '🌐 Chrome' : /Firefox/.test(ua) ? '🌐 Firefox' : /Safari/.test(ua) ? '🌐 Safari' : '🌐 Browser';
 }
 
-function setActiveTab(tab) {
-  tabButtons.forEach(button => {
-    const isActive = button.dataset.tab === tab;
-    button.classList.toggle('active', isActive);
-    button.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  });
-  if (tab === 'website') {
-    input.placeholder = 'Nhập URL cần kiểm tra...';
-    input.type = 'url';
-  } else {
-    input.placeholder = 'Nhập tài khoản cần kiểm tra...';
-    input.type = 'text';
-  }
+function showPopup(message) {
+  popupMessage.textContent = message;
+  popupMessage.classList.add('show');
 }
 
-function getActiveTab() {
-  const active = document.querySelector('.tab-btn.active');
-  return active ? active.dataset.tab : 'account';
+function hidePopup() {
+  popupMessage.textContent = '';
+  popupMessage.classList.remove('show');
 }
 
 function isAsciiAccount(value) {
@@ -95,28 +84,6 @@ function validateAccountInput(value) {
   return { valid: true };
 }
 
-function validateWebsiteInput(value) {
-  if (!value) {
-    return { valid: false, message: 'Vui lòng nhập website.' };
-  }
-  let url = value.trim();
-  if (!/^https?:\/\//i.test(url)) {
-    url = `https://${url}`;
-  }
-
-  try {
-    const parsed = new URL(url);
-    const suffix = parsed.hostname.split('.').pop().toLowerCase();
-    const allowed = ['com', 'vn', 'asia', 'us', 'net', 'org', 'io', 'xyz', 'site', 'online', 'info'];
-    if (!allowed.includes(suffix)) {
-      return { valid: false, message: 'Website phải có hậu tố .vn, .com, .asia, .us hoặc tương tự.' };
-    }
-    return { valid: true, url: parsed.href };
-  } catch (error) {
-    return { valid: false, message: 'Website không hợp lệ.' };
-  }
-}
-
 function appendLog(message) {
   const line = document.createElement('div');
   line.textContent = `> ${message}`;
@@ -124,30 +91,9 @@ function appendLog(message) {
   logBox.scrollTop = logBox.scrollHeight;
 }
 
-function appendLogLink(url) {
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.textContent = 'Mở link kiểm tra trực tiếp';
-  anchor.target = '_blank';
-  anchor.rel = 'noopener noreferrer';
-  anchor.className = 'log-link';
-  logBox.appendChild(anchor);
-  logBox.appendChild(document.createElement('div'));
-  logBox.scrollTop = logBox.scrollHeight;
-}
-
-function testWebsiteLink(url) {
-  appendLog(`Kiểm tra link trực tiếp: ${url}`);
-  appendLogLink(url);
-  fetch(url, { mode: 'no-cors' })
-    .then(() => appendLog('Link có thể truy cập (kiểm tra sơ bộ).'))
-    .catch(() => appendLog('Không thể truy cập link trực tiếp, hãy kiểm tra lại URL.'));
-}
-
 function startFlow() {
   warning.textContent = '';
   checkWarning.textContent = '';
-  const mode = getActiveTab();
   const rawValue = input.value.trim();
 
   if (!agree.checked) {
@@ -156,31 +102,22 @@ function startFlow() {
   }
 
   logBox.innerHTML = '';
-  let websiteUrl = '';
-  if (mode === 'account') {
-    const validation = validateAccountInput(rawValue);
-    if (!validation.valid) {
-      checkWarning.textContent = validation.message;
-      return;
+  const validation = validateAccountInput(rawValue);
+  if (!validation.valid) {
+    checkWarning.textContent = validation.message;
+    if (hasVietnameseChars(rawValue)) {
+      showPopup(validation.message);
     }
-    appendLog(`Kiểm tra tài khoản: ${rawValue}`);
-  } else {
-    const validation = validateWebsiteInput(rawValue);
-    if (!validation.valid) {
-      checkWarning.textContent = validation.message;
-      return;
-    }
-    websiteUrl = validation.url;
-    appendLog(`Kiểm tra website: ${websiteUrl}`);
-    testWebsiteLink(websiteUrl);
+    return;
   }
 
+  hidePopup();
+  appendLog(`Kiểm tra tài khoản: ${rawValue}`);
+  appendLog('Nhà cái: SC88');
   screen1.classList.remove('show');
   screen2.classList.add('show');
   screen3.classList.remove('show');
-  if (mode === 'account') {
-    appendLog(`Tài khoản hợp lệ: ${rawValue}`);
-  }
+  appendLog(`Tài khoản hợp lệ: ${rawValue}`);
   percent.textContent = '0%';
   bar.style.width = '0%';
 
@@ -230,11 +167,17 @@ window.addEventListener('DOMContentLoaded', () => {
   resizeMatrix();
   drawMatrix();
   setSystemInfo();
-  setActiveTab('account');
 });
 
-tabButtons.forEach(button => {
-  button.addEventListener('click', () => setActiveTab(button.dataset.tab));
+input.addEventListener('input', () => {
+  const value = input.value.trim();
+  if (hasVietnameseChars(value)) {
+    showPopup('Tài khoản không được chứa dấu tiếng Việt.');
+  } else if (value && !isAsciiAccount(value)) {
+    showPopup('Tài khoản chỉ được chứa chữ, số, ., -, _.');
+  } else {
+    hidePopup();
+  }
 });
 
 startBtn.addEventListener('click', startFlow);

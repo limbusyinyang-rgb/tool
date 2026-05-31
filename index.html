@@ -15,59 +15,36 @@
     <div class="card show" id="screen1">
       <h2 class="glitch" data-text="[ XÓA MÃ ẨN ]">[ XÓA MÃ ẨN ]</h2>
 
-      <div class="tab-selection" role="tablist" aria-label="Chế độ">
-        <button type="button" class="tab-btn active" role="tab" aria-selected="true" id="tab-account" data-tab="account">
-          <span class="tab-icon">👤</span>
-          <span>Tài Khoản</span>
-        </button>
-        <button type="button" class="tab-btn" role="tab" aria-selected="false" id="tab-website" data-tab="website">
-          <span class="tab-icon">🌐</span>
-          <span>Website</span>
-        </button>
-      </div>
-
-      <div class="check-to-select-stack">
-        <div class="shared-check-row" id="checkInputRegion" data-check-state="website" role="group" aria-label="Ô kiểm tra">
+      <div class="account-block">
+        <div class="section-title">Tài khoản</div>
+        <div class="shared-check-row" id="checkInputRegion" role="group" aria-label="Ô kiểm tra">
           <div class="input-leading-wrap">
-            <span class="leading-icon-slot" aria-hidden="true">🌐</span>
-            <input class="check-input" type="text" id="checkInput" name="checkInput" placeholder="Nhập URL cần kiểm tra..." autocomplete="url" inputmode="url" aria-label="Nhập URL cần kiểm tra" />
+            <span class="leading-icon-slot" aria-hidden="true">👤</span>
+            <input class="check-input" type="text" id="checkInput" name="checkInput" placeholder="Nhập tài khoản không dấu..." autocomplete="off" aria-label="Nhập tài khoản cần kiểm tra" />
           </div>
         </div>
+        <div class="popup" id="popupMessage"></div>
         <div class="check-warning-gap" id="checkWarningGap" aria-live="polite">
           <div id="checkWarning" class="warning check-input-warning" role="alert"></div>
         </div>
         <div class="select_target">Chọn mục tiêu để xoá mã ẩn</div>
       </div>
 
-      <div class="desc">Click chọn trang — locked = vô hiệu</div>
-
+      <div class="desc">Chọn mục tiêu để xoá mã ẩn</div>
       <div class="banner-grid">
         <button class="banner-item active">
           <img src="assets/logos/sc88.png" alt="SC88" class="logo-img" />
           <span>SC88</span>
         </button>
         <button class="banner-item locked" disabled>
-          <img src="assets/logos/hi88.webp" alt="Hi88" class="logo-img" />
-          <span>Hi88</span>
-          <span class="lock-overlay">🔒</span>
-        </button>
-        <button class="banner-item locked" disabled>
-          <img src="assets/logos/shbet.webp" alt="SHBET" class="logo-img" />
           <span>SHBET</span>
           <span class="lock-overlay">🔒</span>
         </button>
         <button class="banner-item locked" disabled>
-          <img src="assets/logos/mm88.webp" alt="MM88" class="logo-img" />
-          <span>MM88</span>
-          <span class="lock-overlay">🔒</span>
-        </button>
-        <button class="banner-item locked" disabled>
-          <img src="assets/logos/cm88.webp" alt="CM88" class="logo-img" />
           <span>CM88</span>
           <span class="lock-overlay">🔒</span>
         </button>
         <button class="banner-item locked" disabled>
-          <img src="assets/logos/f168.webp" alt="F168" class="logo-img" />
           <span>F168</span>
           <span class="lock-overlay">🔒</span>
         </button>
