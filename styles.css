@@ -289,48 +289,6 @@ body {
   font-size: 0.96rem;
 }
 
-.banner-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-  margin: 1rem 0 0.75rem;
-}
-
-.banner-item {
-  position: relative;
-  min-height: 72px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text);
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem;
-  justify-content: flex-start;
-  cursor: pointer;
-  font-size: 0.95rem;
-  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-}
-
-.banner-item.active {
-  border-color: rgba(0, 255, 146, 0.6);
-  background: rgba(0, 255, 146, 0.12);
-}
-
-.banner-item.locked {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.lock-overlay {
-  position: absolute;
-  right: 0.9rem;
-  top: 0.9rem;
-  font-size: 1rem;
-}
-
 .logo-img {
   width: 36px;
   height: 36px;

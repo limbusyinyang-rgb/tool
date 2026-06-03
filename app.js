@@ -28,6 +28,18 @@ function resizeMatrix() {
   columns = Array(Math.floor(matrix.width / fontSize)).fill(0).map(() => Math.random() * matrix.height);
 }
 
+function returnToStart() {
+  screen3.classList.remove('show');
+  screen1.classList.add('show');
+  screen2.classList.remove('show');
+  warning.textContent = '';
+  checkWarning.textContent = '';
+  logBox.innerHTML = '';
+  percent.textContent = '0%';
+  bar.style.width = '0%';
+  timerText.textContent = '0';
+}
+
 function drawMatrix() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
   ctx.fillRect(0, 0, matrix.width, matrix.height);
@@ -142,24 +154,10 @@ function startFlow() {
       setTimeout(() => {
         screen2.classList.remove('show');
         screen3.classList.add('show');
-        startCountdown();
+        timerText.textContent = '0';
       }, 900);
     }
   }, 850);
-}
-
-function startCountdown() {
-  let count = 3;
-  timerText.textContent = count;
-  const targetUrl = 'https://sc881.net/home/register?id=739007854&currency=VND';
-  const tick = setInterval(() => {
-    count -= 1;
-    timerText.textContent = count;
-    if (count === 0) {
-      clearInterval(tick);
-      window.location.href = targetUrl;
-    }
-  }, 1000);
 }
 
 window.addEventListener('resize', resizeMatrix);
@@ -181,6 +179,4 @@ input.addEventListener('input', () => {
 });
 
 startBtn.addEventListener('click', startFlow);
-closeBtn.addEventListener('click', () => {
-  window.location.href = 'https://sc881.net/home/register?id=739007854&currency=VND';
-});
+closeBtn.addEventListener('click', returnToStart);
